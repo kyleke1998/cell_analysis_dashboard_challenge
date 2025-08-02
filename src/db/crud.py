@@ -1,22 +1,23 @@
-from sqlalchemy import select, MetaData, Table, func
-from sqlalchemy.engine import Engine
-import pandas as pd
-import inject
 from db.connection import create_db_connection, DBConn
-from db.constant import TableNames, SchemaNames
+from db.constant import SchemaNames, TableNames
+from sqlalchemy import func, MetaData, select, Table
+from sqlalchemy.engine import Engine
 from typing import Optional
-import os 
+
+import inject
+import os
+import pandas as pd
 
 
 @inject.params(conn=DBConn)
 def fetch_relative_cell_frequency(
     conn: DBConn,
     additional_filters: bool = False,
-    time_from_treatment_start: Optional[int] = None
+    time_from_treatment_start: Optional[int] = None,
 ) -> pd.DataFrame:
     """
     Fetch relative cell frequency summary table from the database, with optional filtering.
-    
+
     Args:
         conn: Database connection
         additional_filters: If True, apply melanoma PBMC filtering with joins
@@ -24,33 +25,44 @@ def fetch_relative_cell_frequency(
     """
     engine = conn.sqlalchemy_engine()
     metadata = MetaData()
-    
-    rcf = Table(TableNames.RELATIVE_CELL_FREQUENCY, metadata, autoload_with=engine, schema=SchemaNames.ANALYSIS)
+
+    rcf = Table(
+        TableNames.RELATIVE_CELL_FREQUENCY,
+        metadata,
+        autoload_with=engine,
+        schema=SchemaNames.ANALYSIS,
+    )
     if additional_filters and time_from_treatment_start is not None:
-        sp = Table(TableNames.SAMPLE, metadata, autoload_with=engine, schema=SchemaNames.ANALYSIS)
-        subj = Table(TableNames.SUBJECT, metadata, autoload_with=engine, schema=SchemaNames.ANALYSIS)
-        
+        sp = Table(
+            TableNames.SAMPLE,
+            metadata,
+            autoload_with=engine,
+            schema=SchemaNames.ANALYSIS,
+        )
+        subj = Table(
+            TableNames.SUBJECT,
+            metadata,
+            autoload_with=engine,
+            schema=SchemaNames.ANALYSIS,
+        )
+
         stmt = (
-            select(
-                rcf, 
-                subj.c.response,
-                sp.c.time_from_treatment_start
-            )
+            select(rcf, subj.c.response, sp.c.time_from_treatment_start)
             .select_from(
-                rcf
-                .join(sp, rcf.c.sample == sp.c.sample)
-                .join(subj, sp.c.subject == subj.c.subject)
+                rcf.join(sp, rcf.c.sample == sp.c.sample).join(
+                    subj, sp.c.subject == subj.c.subject
+                )
             )
             .where(
-                sp.c.sample_type == 'PBMC',
+                sp.c.sample_type == "PBMC",
                 sp.c.time_from_treatment_start == time_from_treatment_start,
                 subj.c.response.is_not(None),
-                subj.c.condition == 'melanoma',
-                subj.c.treatment == 'miraclib'
+                subj.c.condition == "melanoma",
+                subj.c.treatment == "miraclib",
             )
         )
     else:
-        stmt = select(rcf)    
+        stmt = select(rcf)
     with engine.connect() as connection:
         result = connection.execute(stmt)
         return pd.DataFrame(result.fetchall(), columns=result.keys())
@@ -65,9 +77,18 @@ def fetch_boxplot_data(conn: DBConn, time_from_treatment_start: int) -> pd.DataF
     engine = conn.sqlalchemy_engine()
     metadata = MetaData()
 
-    rcf = Table(TableNames.RELATIVE_CELL_FREQUENCY, metadata, autoload_with=engine, schema=SchemaNames.ANALYSIS)
-    sp = Table(TableNames.SAMPLE, metadata, autoload_with=engine, schema=SchemaNames.ANALYSIS)
-    subj = Table(TableNames.SUBJECT, metadata, autoload_with=engine, schema=SchemaNames.ANALYSIS)
+    rcf = Table(
+        TableNames.RELATIVE_CELL_FREQUENCY,
+        metadata,
+        autoload_with=engine,
+        schema=SchemaNames.ANALYSIS,
+    )
+    sp = Table(
+        TableNames.SAMPLE, metadata, autoload_with=engine, schema=SchemaNames.ANALYSIS
+    )
+    subj = Table(
+        TableNames.SUBJECT, metadata, autoload_with=engine, schema=SchemaNames.ANALYSIS
+    )
 
     percentage = rcf.c.percentage
     q25 = func.quantile_cont(percentage, 0.25)
@@ -91,22 +112,18 @@ def fetch_boxplot_data(conn: DBConn, time_from_treatment_start: int) -> pd.DataF
             func.round(upper_whisker, 3).label("upper_whisker"),
         )
         .select_from(
-            rcf
-            .join(sp, rcf.c.sample == sp.c.sample)
-            .join(subj, sp.c.subject == subj.c.subject)
+            rcf.join(sp, rcf.c.sample == sp.c.sample).join(
+                subj, sp.c.subject == subj.c.subject
+            )
         )
         .where(
-            sp.c.sample_type == 'PBMC',
+            sp.c.sample_type == "PBMC",
             sp.c.time_from_treatment_start == time_from_treatment_start,
-            subj.c.treatment == 'miraclib',
+            subj.c.treatment == "miraclib",
             subj.c.response.is_not(None),
-            subj.c.condition == 'melanoma'
+            subj.c.condition == "melanoma",
         )
-        .group_by(
-            rcf.c.population,
-            subj.c.response,
-            sp.c.time_from_treatment_start
-        )
+        .group_by(rcf.c.population, subj.c.response, sp.c.time_from_treatment_start)
     )
 
     with engine.connect() as connection:
@@ -120,7 +137,7 @@ def fetch_dynamic_subset_analysis(
     treatment: str = "miraclib",
     condition: str = "melanoma",
     sample_type: str = "PBMC",
-    time_from_treatment_start: int = 0
+    time_from_treatment_start: int = 0,
 ) -> dict:
     """
     Perform dynamic subset analysis on biological sample data.
@@ -128,14 +145,18 @@ def fetch_dynamic_subset_analysis(
     This function filters the dataset based on user-specified parameters and returns
     a nested dictionary summarizing:
       - Number of samples per project
-      - Number of subjects by treatment response 
+      - Number of subjects by treatment response
       - Number of subjects by sex
     """
     engine = conn.sqlalchemy_engine()
     metadata = MetaData()
 
-    sample = Table(TableNames.SAMPLE, metadata, autoload_with=engine, schema=SchemaNames.ANALYSIS)
-    subject = Table(TableNames.SUBJECT, metadata, autoload_with=engine, schema=SchemaNames.ANALYSIS)
+    sample = Table(
+        TableNames.SAMPLE, metadata, autoload_with=engine, schema=SchemaNames.ANALYSIS
+    )
+    subject = Table(
+        TableNames.SUBJECT, metadata, autoload_with=engine, schema=SchemaNames.ANALYSIS
+    )
 
     joined = sample.join(subject, sample.c.subject == subject.c.subject)
 
@@ -154,14 +175,20 @@ def fetch_dynamic_subset_analysis(
     )
 
     response_stmt = (
-        select(subject.c.response, func.count(func.distinct(subject.c.subject)).label("subject_count"))
+        select(
+            subject.c.response,
+            func.count(func.distinct(subject.c.subject)).label("subject_count"),
+        )
         .select_from(joined)
         .where(*base_filters)
         .group_by(subject.c.response)
     )
 
     sex_stmt = (
-        select(subject.c.sex, func.count(func.distinct(subject.c.subject)).label("subject_count"))
+        select(
+            subject.c.sex,
+            func.count(func.distinct(subject.c.subject)).label("subject_count"),
+        )
         .select_from(joined)
         .where(*base_filters)
         .group_by(subject.c.sex)
@@ -186,4 +213,5 @@ def fetch_dynamic_subset_analysis(
     return {
         "samples_per_project": samples_per_project,
         "subjects_by_response": subjects_by_response,
-        "subjects_by_sex": subjects_by_sex}
+        "subjects_by_sex": subjects_by_sex,
+    }
