@@ -1,50 +1,31 @@
-# Insert Repo Name Here
-This is a template repo to build future repositories out of. It contains directories and files common to most Culmination Bio apps. To use this template, click `Create a new repository` from the `Use this template` dropdown in the top right corner.
-![Github screenshot for using this template](example.png)
-
-- `.githooks/`, `.flake8`, `.pre-commit-config.yaml` for pre-commit hooks (linting, testing)
-- `.github/` including config for `dependabot` as well as a PR template
-- `data/` containing common configs for database connections and visuals
-- `notebook/` for jupyter notebooks, including
-  - `util.ipy` to run the startup scripts in `notebook/scripts/`
-- `src/cb/insertRepoNameHere` - The src directory structure for Culmination apps should follow this structure
-- `static/` which contains the favicon for Culmination Bio
-- `test/` which contains `test/conftest.py` - a basic setup to use `pytest` for unit tests
-- standard `.gitignore`
-- `environment.yml` for conda environment
-= `README.md` - Add information about the repo to the top and delete this portion.
-
-The pieces below are common to most Culmination Bio repositories.
-
-## Installation
-### Logging into AWS
-- Set the AWS_PROFILE env variable
-- Session refresh: ```aws sso login```
-
-### Build environment
-- Create a conda environment from the attached environemnt yml:
-  ```
-  conda env create -f environment.yml
-  ```
-- Activate with
-  ```
-  conda activate insertRepoNameHere
-  ```
-- Add `src` to your `PYTHONPATH`.
-  ```
-  export PYTHONPATH=/Path/to/insertRepoNameHere/src:$PYTHONPATH
-  ```
+## Cell Analysis Dashboard Challenge
+This dashboard provides an interactive analysis of immune cell population frequencies across clinical trial samples, allowing users to compute relative frequencies per sample and compare distributions between responders and non-responders to the drug miraclib. It also supports subset analysis to explore early treatment effects in melanoma PBMC samples at baseline, stratifying by project, response status, and sex.
 
 
-## Running
-Run `notebook/insertRepoNameHere.ipynb`.
 
-## Auto-Format with Pre-Commit Hooks
-We use pre-commit hooks configured in `.pre-commit-config.yaml` to format the code. To be able to use the pre-commit hooks, do the following steps:
-1. Make sure `pre-commit` is installed by running `pre-commit --version` (it should have automatically installed when creating the conda environment)
-2. Run `git config core.hooksPath .githooks` to set the hooks path to the `.githooks` folder in the repo
+### Highlights
+- CLI utility to load CSV data into *DuckDB* from YAML configuration  
+- Support for schema tracking and reproducible ingestion  
+- Flexible database retrival methods using SQLAlchemy  
+- Parametric and Non-Parametric statistical analysis methods exposed via API
+- REST API for serving dashboard statistics and plotting built with FastAPI  
+- Streamlit web app for interactive cell analysis dashboard  
+- Containerized deployment via Docker with shared networking between API and dashboard app  
 
-You only need to do the steps above once for each repo. Now every time you commit a code change, the hooks in `.pre-commit-config.yaml` will execute.
 
+### Getting Started
+#### One liner to run the app using Docker in Code Space. This will create and load data from .csv into databse, start up backend API and frontend. 
+```
+docker-compose up --build -d
+```
+
+### Database Design Rational
+The overall rational is to create a design that focuses on enabling fast analytic workflows behind the dashboard, at the same time reducing redundancy via appropraite normalizations, and also making sure new cell populations can be added in future projects. This design can be used in the future to do analyses such as comparing cell population frequencies over time (e.g., baseline vs. day 7 or 14) using paired t-tests or linear mixed effects models to account for repeated measures. It also enables comparisons across treatment arms to identify population-level immune responses associated with different therapies.
+
+- **Normalization**: Data is structured to reduce redundancy and ensure data integrity. Metadata regarding `subject`, `sample`, and `project` entities are separate and connected via foreign keys.
+- **Fast Analytic workflow**: I tired to reduce the in-memory dataframe computations to a minimum and frontload majority of it to the database. `sample_cell_count` is a table in the long format.  Similarily, the `relative_cell_frequency` table has precomputed relative frequencies to accelerate downstream stats tests and visualizations so raw data does not need to be loaded into a dataframe for computation each time the endpoints are hit.These two tables further support analyses like comparing baseline to 7relative cell count frequencies 
+- **Extensibility**: For instance, `sample_cell_count` in the long format. It supports extensibility to more populations and efficient aggregation. 
+
+### 
 ## Contact
-* Raymond Luo <raymond@culmination.com>
+* Kyle Ke <siyangke98@gmail.com>
