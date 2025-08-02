@@ -1,0 +1,54 @@
+#!/bin/sh
+#------------------------------------------------------------------------------------------------------------
+# git pre-push script: runs unit tests before a push. Fails on test failure. Runs tests only if files were
+# changed in code/test directories.
+#------------------------------------------------------------------------------------------------------------
+#
+# Constants.
+#
+
+# List of changed file patterns to match for running unit tests.
+WHITE_LIST="^src/ ^test/"
+# Local Sqlite database file fir unit tests.
+TESTDB="data/test.db"
+
+list_regex() {
+    # Returns a regular expression of matching any of the elements of a list.
+    e=""
+    for expr in $1; do
+	e=$(echo "$e|$expr")
+    done
+    echo "${e:1}"
+}
+
+#------------------------------------------------------------------------
+# Main script.
+#------------------------------------------------------------------------
+
+#
+# Get local and remote branch names.
+#
+branch_name="$(git symbolic-ref HEAD 2>/dev/null)" ||
+branch_name="(unnamed branch)"     # detached HEAD
+branch_name=${branch_name##refs/heads/}
+remote=$1/$branch_name
+
+#
+# Are we pushing anything that needs to be tested?
+#
+expr=$(list_regex "${WHITE_LIST}")
+
+count="$(git diff --name-only $branch_name $remote | grep -c -E "${expr}")"
+if [[ $count -eq 0 ]]; then
+    exit 0
+fi
+
+#
+# Run unit tests.
+#
+PYTHONPATH="src"
+if [[ ! -f "$TESTDB" ]]; then
+    echo "Creating test DB"
+    ./scripts/create_cohort_db.py --db=data/config_prod.yaml --output=data/test.db
+fi
+pytest test
