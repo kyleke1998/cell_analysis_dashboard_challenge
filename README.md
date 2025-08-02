@@ -26,49 +26,52 @@ The overall rational is to create a design that focuses on enabling fast analyti
 - **Fast Analytic workflow**: I tired to reduce the in-memory dataframe computations to a minimum and frontload majority of it to the database. `sample_cell_count` is a table in the long format.  Similarily, the `relative_cell_frequency` table has precomputed relative frequencies to accelerate downstream stats tests and visualizations so raw data does not need to be loaded into a dataframe for computation each time the endpoints are hit.
 - **Extensibility**: For instance, `sample_cell_count` in the long format. It supports extensibility to more populations and efficient aggregation. 
 
+
 ### Repo Structure Rationale
 The database layer uses DuckDB with separate SQL files for schema definitions and data loading. The backend is built with FastAPI and organized into modular components for database access, API routing, and statistical testing, promoting clean separation of logic. The frontend leverages Streamlit with a multi-page layout for clear navigation between summary views, statistical analyses, and subset exploration. Deployment is containerized using Docker and managed with docker-compose.
 
 
-├── dashboard_app/                # Frontend UI app
-│   ├── 1_About.py                # Project introduction & usage guide
-│   └── pages/                    # Multi-page Streamlit interface
-│       ├── Page_1_-_Summary_Table.py
-│       ├── Page_2_-_Statistical_Analysis.py
-│       └── Page_3_-_Subset_Analysis.py
-│   ├── environment.yml           # Frontend specific conda environment
-│   └── images/                   # Logo image
+```
+├── dashboard_app/   # Frontend UI app
+│ ├── 1_About.py   
+│ ├── pages/  
+│ │ ├── Page_1_-Summary_Table.py
+│ │ ├── Page_2-Statistical_Analysis.py
+│ │ └── Page_3-_Subset_Analysis.py
+│ ├── environment.yml   # Frontend-specific conda environment
+│ └── images/   # Logo image(s)
 │
-├── data/                         # Raw input + database connection config
-│   ├── raw_csv/cell_count.csv    # Original flow cytometry data
-│   └── duckdb_config.yaml        # Database connection config
+├── data/ # Raw input & database config
+│ ├── raw_csv/
+│ │ └── cell_count.csv   # Raw data
+│ └── duckdb_config.yaml   # DuckDB connection configuration
 │
-├── data_model/sql/               # Database schema and loading scripts
-│   ├── model/                    # CREATE TABLE statements
-│   └── load/                     # SQL data loaders
+├── data_model/sql/   # Database schema & loaders
+│ ├── model/   # CREATE TABLE scripts
+│ └── load/   # SQL scripts to load data
 │
-├── docker-compose.yml            # Container orchestration (API + frontend)
-├── Dockerfile                    # Backend container (FastAPI)
-├── Dockerfile.streamlit          # Frontend container (Streamlit)
+├── docker-compose.yml   # Orchestrates backend + frontend containers
+├── Dockerfile   # Backend (FastAPI) container build
+├── Dockerfile.streamlit   # Frontend (Streamlit) container build
 │
-├── notebook/                     # Prototyping and EDA
-│   └── sandbox.ipynb
+├── notebook/
+│ └── sandbox.ipynb   # Prototyping and exploratory analysis
 │
-├── scripts/                      
-│   └── create_schema_and_load_data.py # Python CLI script for schema creation and data ingestion
+├── scripts/
+│ └── create_schema_and_load_data.py   # CLI for schema + data ingestion
 │
-├── src/                          # Core backend logic
-│   ├── db/                       # Database abstraction layer
-│   │   ├── connection.py         # DuckDB connection logic
-│   │   ├── constant.py         
-│   │   └── crud.py               # Reusable SQLAlchemy-style CRUD operations
-│   ├── rest/                     # REST Endpoint logic
-│   │   ├── model_rest.py         # Pydantic models
-│   │   └── service.py            # API logic and handlers
-│   └── stat_tests.py             # Statistical testing functions
+├── src/   # Backend application logic
+│ ├── db/
+│ │ ├── connection.py   # DuckDB connection
+│ │ ├── constant.py   
+│ │ └── crud.py   # SQLAlchemy-style operations
+│ ├── rest/
+│ │ ├── model_rest.py   # Pydantic request/response models
+│ │ └── service.py   
+│ └── stat_tests.py   # Statistical test functions
 │
-├── README.md                     # Documentation
-└── environment.yml               # Backend conda environment
-
+├── README.md # Project documentation
+└── environment.yml   # Backend conda environment
+```
 ## Contact
 * Kyle Ke <siyangke98@gmail.com>
