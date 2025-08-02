@@ -1,0 +1,33 @@
+version: '3.12'
+
+services:
+  dashboard-api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: backend-api
+    ports:
+      - "8000:8000"
+    networks:
+      - dashboard-network
+    environment:
+      - PYTHONPATH=/app/src
+    working_dir: /app
+
+  dash-streamlit-demo:
+    build:
+      context: .
+      dockerfile: Dockerfile.streamlit
+    image: frontend-streamlit
+    ports:
+      - "8501:8501"
+    environment:
+      - API_HOST=http://dashboard-api:8000
+      - PYTHONPATH=/app/src
+    networks:
+      - dashboard-network
+    working_dir: /app
+
+networks:
+  dashboard-network:
+    driver: bridge

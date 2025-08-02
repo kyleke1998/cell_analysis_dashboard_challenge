@@ -1,0 +1,22 @@
+name: teiko_dashboard
+channels:
+  - defaults
+  - conda-forge
+dependencies:
+  - python>=3.8
+  - jupyterlab
+  - duckdb
+  - inject
+  - scipy
+  - sqlalchemy
+  - pip
+  - pandas
+  - numpy
+  - pathlib
+  - pydantic
+  - fastapi
+  - uvicorn
+  - pip:
+      - pre-commit
+      - duckdb-engine
+      - fastapi_pagination

@@ -1,0 +1,10 @@
+name: teiko_dashboard_frontend
+channels:
+  - defaults
+  - conda-forge
+dependencies:
+  - python>=3.8
+  - requests
+  - streamlit
+  - plotly
+  - pillow
