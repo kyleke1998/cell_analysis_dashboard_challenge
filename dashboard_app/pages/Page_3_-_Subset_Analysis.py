@@ -29,36 +29,36 @@ with col2:
 
 if (treatment == "none" and condition != "healthy") or (treatment != "none" and condition == "healthy"):
     st.error("Invalid selection: 'none' treatment must be paired with 'healthy' condition and vice versa.")
-
-API_URL = f"{os.getenv('API_HOST')}/analysis_results/subset_analysis/{treatment}/{condition}/{time_from_treatment_start}/{sample_type}"
-
-# Fetch data
-with st.spinner("Fetching data..."):
-    response = requests.get(API_URL)
-
-if response.status_code == 200:
-    data = response.json()
-
-    st.markdown("### Samples per Project")
-    df_samples = pd.DataFrame(data["samples_per_project"])
-    st.dataframe(df_samples, use_container_width=True)
-
-    st.markdown("### Subjects by Treatment Response")
-    df_response = pd.DataFrame(data["subjects_by_response"])
-    st.bar_chart(df_response.set_index("response"))
-
-    st.markdown("### 🚻 Subjects by Sex")
-    df_sex = pd.DataFrame(data["subjects_by_sex"])
-
-    fig = px.pie(
-        df_sex,
-        names="sex",
-        values="subject_count",
-        title="Subjects by Sex Distribution",
-        hole=0.3,
-    )
-    fig.update_traces(textinfo="label+value")
-    st.plotly_chart(fig, use_container_width=True)
-
 else:
-    st.error(f"API Request failed with status {response.status_code}: {response.text}")
+    API_URL = f"{os.getenv('API_HOST')}/analysis_results/subset_analysis/{treatment}/{condition}/{time_from_treatment_start}/{sample_type}"
+
+    # Fetch data
+    with st.spinner("Fetching data..."):
+        response = requests.get(API_URL)
+
+    if response.status_code == 200:
+        data = response.json()
+
+        st.markdown("### Samples per Project")
+        df_samples = pd.DataFrame(data["samples_per_project"])
+        st.dataframe(df_samples, use_container_width=True)
+
+        st.markdown("### Subjects by Treatment Response")
+        df_response = pd.DataFrame(data["subjects_by_response"])
+        st.bar_chart(df_response.set_index("response"))
+
+        st.markdown("### 🚻 Subjects by Sex")
+        df_sex = pd.DataFrame(data["subjects_by_sex"])
+
+        fig = px.pie(
+            df_sex,
+            names="sex",
+            values="subject_count",
+            title="Subjects by Sex Distribution",
+            hole=0.3,
+        )
+        fig.update_traces(textinfo="label+value")
+        st.plotly_chart(fig, use_container_width=True)
+
+    else:
+        st.error(f"API Request failed with status {response.status_code}: {response.text}")
