@@ -19,7 +19,7 @@ This dashboard provides an interactive analysis of immune cell population freque
 ```
 docker-compose up --build -d
 ```
-#### Access the dashboard, link is dynamically generated in CodeSpace. Click PORTS and click on the `forwarded_address` when port is 8501.
+#### To access the dashboard, link is dynamically generated in CodeSpace. Click PORTS and click on the `forwarded_address` where port is 8501.
 <img width="2828" height="652" alt="image" src="https://github.com/user-attachments/assets/edcb16f2-f59c-4bb7-890f-d6bf6a7f1508" />
 
 
