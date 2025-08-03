@@ -2,7 +2,7 @@ import pandas as pd
 import plotly.express as px
 import requests
 import streamlit as st
-
+import os
 st.set_page_config(page_title="Treatment Subset Analysis", layout="wide")
 
 st.title("Early Treatment Effect Analysis Dashboard")
@@ -10,6 +10,7 @@ st.subheader("Explore PBMC Samples by Subset Criteria")
 
 st.markdown("#### 🔍 Filter Criteria")
 col1, col2 = st.columns(2)
+
 with col1:
     treatment = st.selectbox(
         "Select Treatment", options=["miraclib", "none", "phauximab"], index=0
@@ -17,6 +18,7 @@ with col1:
     time_from_treatment_start = st.selectbox(
         "Select Time from Treatment Start", options=[0, 7, 14], index=0
     )
+
 with col2:
     condition = st.selectbox(
         "Select Condition", options=["melanoma", "carcinoma", "healthy"], index=0
@@ -25,7 +27,10 @@ with col2:
         "Select Sample Type", options=["PBMC", "WB"], index=0
     )
 
-API_URL = f"http://dashboard-api:8000/analysis_results/subset_analysis/{treatment}/{condition}/{time_from_treatment_start}/{sample_type}"
+if (treatment == "none" and condition != "healthy") or (treatment != "none" and condition == "healthy"):
+    st.error("Invalid selection: 'none' treatment must be paired with 'healthy' condition and vice versa.")
+
+API_URL = f"{os.getenv('API_HOST')}/analysis_results/subset_analysis/{treatment}/{condition}/{time_from_treatment_start}/{sample_type}"
 
 # Fetch data
 with st.spinner("Fetching data..."):

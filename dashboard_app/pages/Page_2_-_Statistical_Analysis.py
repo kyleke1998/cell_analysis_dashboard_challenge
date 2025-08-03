@@ -4,11 +4,11 @@ import pandas as pd
 import plotly.graph_objects as go
 import requests
 import streamlit as st
-
+import os
 st.set_page_config(layout="wide")
 st.title("Statistical Analysis")
 
-API_URL = "http://dashboard-api:8000/analysis_results/boxplot_stats"
+API_URL = f"{os.getenv('API_HOST')}/analysis_results/boxplot_stats"
 time_points = [0, 7, 14]
 
 col1, col2 = st.columns(2)

@@ -86,6 +86,7 @@ def _execute_sql_files(conn, sql_files, csv_files):
                 if csv_file.endswith(".csv"):
                     csv_index += 1
                     _logger.info(f"Injecting CSV file {csv_index}: {csv_file}")
+                    print(csv_file)
                     sql = sql_template.replace("@csv_path@", csv_file)
                     _logger.info(f"Inserting CSV {csv_file} into staging.raw_table")
                     conn.execute(sql, ddl=True)

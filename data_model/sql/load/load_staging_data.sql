@@ -1,2 +1,2 @@
 INSERT INTO staging.raw_table
-SELECT * FROM read_csv_auto('@csv_path@');
+SELECT * FROM read_csv('@csv_path@',strict_mode='False');

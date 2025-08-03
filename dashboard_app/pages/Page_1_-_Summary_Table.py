@@ -1,9 +1,9 @@
 import pandas as pd
 import requests
 import streamlit as st
-
+import os
 # Constants
-API_URL = "http://dashboard-api:8000/analysis_results/relative_cell_frequency"
+API_URL = f"{os.getenv('API_HOST')}/analysis_results/relative_cell_frequency"
 PAGE_SIZE = 50
 # Set page config
 st.set_page_config(page_title="Relative Cell Frequency Summary", layout="wide")

@@ -7,6 +7,9 @@ from typing import Optional
 import inject
 import os
 import pandas as pd
+import inject
+import os
+import yaml
 
 
 @inject.params(conn=DBConn)
@@ -215,3 +218,5 @@ def fetch_dynamic_subset_analysis(
         "subjects_by_response": subjects_by_response,
         "subjects_by_sex": subjects_by_sex,
     }
+
+
