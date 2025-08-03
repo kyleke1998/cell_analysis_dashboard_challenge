@@ -14,10 +14,17 @@ This dashboard provides an interactive analysis of immune cell population freque
 
 
 ### Getting Started
-#### One liner to run the app using Docker in Code Space. This will create and load data from .csv into databse, start up backend API and frontend. 
+#### One liner to run the app using Docker in CodeSpace. This will create and load data from .csv into databse, start up backend API and frontend. 
+#### Important: CodeSpace instance must have at 16 GB of RAM!!
 ```
 docker-compose up --build -d
 ```
+#### Access the dashboard, link is dynamically generated in CodeSpace. Click PORTS and click on the `forwarded_address` when port is 8501.
+<img width="2828" height="652" alt="image" src="https://github.com/user-attachments/assets/edcb16f2-f59c-4bb7-890f-d6bf6a7f1508" />
+
+
+
+
 
 ### Database Design Rationale
 The overall rational is to create a design that focuses on enabling fast analytic workflows behind the dashboard, at the same time reducing redundancy via appropraite normalizations, and also making sure new cell populations can be added in future projects. This design can be used in the future to do analyses such as comparing cell population frequencies over time (e.g., baseline vs. day 7 or 14) using paired t-tests or linear mixed effects models to account for repeated measures. It also enables comparisons across treatment arms to identify population-level immune responses associated with different therapies.
