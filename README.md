@@ -35,7 +35,7 @@ The overall rationale is to create a design that focuses on enabling fast analyt
 
 
 ### Repo Structure Rationale
-The database layer uses DuckDB separate SQL files for schema definitions and data loading. The `.sql` scripts for creating the schema and ingesting data is all in `data_models/sql`. Importable modualized backend code is built with FastAPI and organized into modular components in `src`, including database abastration, API routing, and statistical testing. The frontend leverages Streamlit with a multi-page layout and is located in `dashboard_app`. Deployment is containerized using Docker and managed with docker-compose.
+The database layer uses DuckDB and separate SQL files for schema definitions and data loading. The `.sql` scripts for creating the schema and ingesting data is all in `data_models/sql`. Importable modualized backend code is  organized into modular components in `src`, including database abastration, API routing, and statistical testing. The frontend leverages Streamlit with a multi-page layout and is located in `dashboard_app`. Deployment is containerized using Docker and managed with docker-compose.
 
 
 ```
