@@ -30,8 +30,8 @@ docker-compose up --build -d
 The overall rationale is to create a design that focuses on enabling fast analytic workflows behind the dashboard, at the same time reducing redundancy via appropraite normalizations, and ensure extensibility (e.g. more cell type can be added). This design can be used in the future to do analyses such as comparing cell population frequencies over time (e.g., baseline vs. day 7 or 14) using paired t-tests or linear mixed effects models to account for repeated measures. It also enables comparisons across treatment arms to identify population-level immune responses associated with different therapies.
 
 - **Normalization**: Data is structured to reduce redundancy and ensure data integrity. Metadata regarding `subject`, `sample`, and `project` entities are separate and connected via foreign keys.
-- **Fast Analytic workflow**: I tired to reduce the in-memory dataframe computations to a minimum and frontload majority of it to the database. `sample_cell_count` is a table in the long format.  Similarily, the `relative_cell_frequency` table has precomputed relative frequencies to accelerate downstream stats tests and visualizations.
-- **Extensibility**: For instance, `sample_cell_count` in the long format. It supports extensibility to more populations and efficient aggregation. 
+- **Fast Analytic workflow**: I tired to reduce the in-memory dataframe computations to a minimum and frontload majority of it to the database. `sample_cell_count` is a table in the long format enabling efficient aggregation. Similarily, the `relative_cell_frequency` table has precomputed relative frequencies to accelerate downstream stats tests and visualizations.
+- **Extensibility**: For instance, `sample_cell_count` in the long format. It supports extensibility to more population.
 
 
 ### Repo Structure Rationale
