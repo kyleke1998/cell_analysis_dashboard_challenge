@@ -71,9 +71,9 @@ The database layer uses DuckDB separate SQL files for schema definitions and dat
 │ ├── db/
 │ │ ├── connection.py   # DuckDB connection
 │ │ ├── constant.py   
-│ │ └── crud.py   # SQLAlchemy-style operations
+│ │ └── crud.py   # database abstraction layer
 │ ├── rest/
-│ │ ├── model_rest.py   # Pydantic request/response models
+│ │ ├── model_rest.py   # Pydantic response models
 │ │ └── service.py   
 │ └── stat_tests.py   # Statistical test functions
 │
